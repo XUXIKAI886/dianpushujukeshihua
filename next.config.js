@@ -1,5 +1,12 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  // 静态导出配置（用于GitHub Pages）
+  output: 'export',
+  trailingSlash: true,
+  images: {
+    unoptimized: true
+  },
+
   // 启用实验性功能
   experimental: {
     // 优化包大小
