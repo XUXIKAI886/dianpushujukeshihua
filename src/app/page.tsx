@@ -5,6 +5,7 @@ import { BarChart3, RefreshCw } from 'lucide-react';
 import FileUpload from '@/components/FileUpload';
 import StatsCards from '@/components/StatsCards';
 import Charts from '@/components/Charts';
+import AIAnalysisReport from '@/components/AIAnalysisReport';
 import { AppState, ExcelDataRow, UploadStatus } from '@/types';
 import { DataService } from '@/lib/dataService';
 
@@ -175,6 +176,11 @@ export default function Home() {
             {/* 图表展示 */}
             <div className="animate-fade-in">
               <Charts data={appState.data} />
+            </div>
+
+            {/* AI智能分析报告 */}
+            <div className="animate-fade-in">
+              <AIAnalysisReport data={appState.data} storeInfo={appState.storeInfo} />
             </div>
           </div>
         )}
