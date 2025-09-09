@@ -16,6 +16,83 @@ interface AnalysisState {
   error: string | null;
 }
 
+// 格式化报告文本为美观的JSX
+const formatReportText = (text: string) => {
+  const lines = text.split('\n').filter(line => line.trim() !== '');
+  const elements: JSX.Element[] = [];
+  let key = 0;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i].trim();
+
+    // 跳过空行
+    if (!line) continue;
+
+    // 主标题（包含【】的行）
+    if (line.includes('【') && line.includes('】')) {
+      elements.push(
+        <div key={key++} className="text-center mb-6">
+          <h2 className="text-xl font-bold text-gray-900 bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
+            {line}
+          </h2>
+        </div>
+      );
+    }
+    // 一级标题（一、二、三、四、五）
+    else if (/^[一二三四五六七八九十]、/.test(line)) {
+      elements.push(
+        <div key={key++} className="mt-6 mb-3">
+          <h3 className="text-lg font-semibold text-gray-800 border-l-4 border-blue-500 pl-3 bg-blue-50 py-2 rounded-r">
+            {line}
+          </h3>
+        </div>
+      );
+    }
+    // 店铺信息行
+    else if (line.includes('店铺：') || line.includes('周期：') || line.includes('城市：')) {
+      elements.push(
+        <div key={key++} className="mb-2">
+          <p className="text-gray-700 bg-gray-50 px-3 py-2 rounded inline-block">
+            <span className="font-medium text-gray-900">{line}</span>
+          </p>
+        </div>
+      );
+    }
+    // 项目符号行（• 开头）
+    else if (line.startsWith('•') || line.startsWith('·')) {
+      elements.push(
+        <div key={key++} className="mb-2 ml-4">
+          <div className="flex items-start space-x-2">
+            <span className="text-blue-500 font-bold mt-1">•</span>
+            <p className="text-gray-700 leading-relaxed">{line.substring(1).trim()}</p>
+          </div>
+        </div>
+      );
+    }
+    // 数字序号行（1. 2. 3.）
+    else if (/^\d+\./.test(line)) {
+      elements.push(
+        <div key={key++} className="mb-2 ml-2">
+          <p className="text-gray-700 leading-relaxed">
+            <span className="font-medium text-blue-600">{line.match(/^\d+\./)?.[0]}</span>
+            <span className="ml-2">{line.replace(/^\d+\./, '').trim()}</span>
+          </p>
+        </div>
+      );
+    }
+    // 普通段落
+    else {
+      elements.push(
+        <div key={key++} className="mb-3">
+          <p className="text-gray-700 leading-relaxed">{line}</p>
+        </div>
+      );
+    }
+  }
+
+  return <div className="space-y-1">{elements}</div>;
+};
+
 export default function AIAnalysisReport({ data, storeInfo }: AIAnalysisReportProps) {
   const [analysis, setAnalysis] = useState<AnalysisState>({
     status: 'idle',
@@ -88,10 +165,11 @@ export default function AIAnalysisReport({ data, storeInfo }: AIAnalysisReportPr
 3. 积极正向反馈：使用积极正面的语言激励商家，提供切实可行的改进建议。
 
 规则
-1. 格式要求：输出内容排版美观整齐，以纯文本格式输出
+1. 格式要求：输出内容排版美观整齐，使用纯文本格式，不要使用markdown语法（如#、*、-等符号）
 2. 数据准确性：确保所有数据项准确提取并清晰展示。
 3. 结构化分析：分析部分需分点详细阐述，逻辑清晰，内容积极正面。
-4. 请不要回答与人设和内容无关的其他任何话题。
+4. 文本格式：使用中文标点符号，用空行分隔段落，用数字序号和项目符号组织内容
+5. 请不要回答与人设和内容无关的其他任何话题。
 
 工作流程
 1. 接收数据：接收用户提供的运营数据。
@@ -102,7 +180,16 @@ export default function AIAnalysisReport({ data, storeInfo }: AIAnalysisReportPr
   - 优势分析：指出运营中的亮点和优势。
   - 劣势分析：识别存在的问题和不足。
   - 改进建议：提供具体、可操作的改进建议。
-5. 输出周报：生成排版美观、内容详实的运营数据报告。以纯文本格式输出`
+5. 输出周报：生成排版美观、内容详实的运营数据报告。
+
+输出格式要求：
+- 使用【】包围主标题
+- 使用"一、二、三、四、五"作为章节标题
+- 使用"•"作为项目符号
+- 使用数字序号"1. 2. 3."列举要点
+- 不要使用markdown语法（#、*、-等）
+- 用空行分隔不同段落
+- 内容要专业、简洁、积极正面`
             },
             {
               role: 'user',
@@ -231,10 +318,10 @@ export default function AIAnalysisReport({ data, storeInfo }: AIAnalysisReportPr
         )}
 
         {analysis.status === 'success' && analysis.report && (
-          <div className="bg-gray-50 rounded-lg p-6">
-            <pre className="whitespace-pre-wrap text-sm text-gray-800 leading-relaxed font-sans">
-              {analysis.report}
-            </pre>
+          <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-lg p-6 border border-blue-100">
+            <div className="prose prose-sm max-w-none">
+              {formatReportText(analysis.report)}
+            </div>
           </div>
         )}
 
