@@ -19,7 +19,7 @@ interface AnalysisState {
 // 格式化报告文本为美观的JSX
 const formatReportText = (text: string) => {
   const lines = text.split('\n').filter(line => line.trim() !== '');
-  const elements: JSX.Element[] = [];
+  const elements: React.ReactElement[] = [];
   let key = 0;
 
   for (let i = 0; i < lines.length; i++) {
@@ -288,7 +288,7 @@ export default function AIAnalysisReport({ data, storeInfo }: AIAnalysisReportPr
             <Brain className="h-16 w-16 text-gray-300 mx-auto mb-4" />
             <h4 className="text-lg font-medium text-gray-900 mb-2">AI智能分析</h4>
             <p className="text-gray-500 mb-6">
-              点击"生成分析"按钮，AI将基于您的运营数据生成专业的分析报告
+              点击&ldquo;生成分析&rdquo;按钮，AI将基于您的运营数据生成专业的分析报告
             </p>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm text-gray-600">
               <div className="flex items-center justify-center space-x-2">
