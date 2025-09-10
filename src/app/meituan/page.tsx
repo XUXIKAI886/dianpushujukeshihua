@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useCallback } from 'react';
+import Link from 'next/link';
 import { BarChart3, RefreshCw } from 'lucide-react';
 import FileUpload from '@/components/FileUpload';
 import StatsCards from '@/components/StatsCards';
@@ -86,12 +87,12 @@ export default function MeituanPage() {
             </div>
 
             <div className="flex items-center space-x-2 sm:space-x-6">
-              <a
+              <Link
                 href="/"
                 className="flex items-center space-x-1 sm:space-x-2 px-2 sm:px-3 py-2 text-sm font-medium text-gray-600 hover:text-gray-800 hover:bg-gray-100 rounded-lg transition-colors"
               >
                 <span>返回首页</span>
-              </a>
+              </Link>
               {appState.uploadStatus === 'success' && (
                 <button
                   onClick={handleReset}
