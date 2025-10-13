@@ -8,15 +8,16 @@ export class ElemeDataService {
   /**
    * 验证数据行
    */
-  private static validateDataRow(row: any): row is ElemeExcelDataRow {
+  private static validateDataRow(row: unknown): row is ElemeExcelDataRow {
     return (
-      row &&
-      typeof row.日期 === 'string' &&
-      typeof row.门店名称 === 'string' &&
-      typeof row.门店编号 === 'string' &&
-      typeof row.收入 === 'number' &&
-      typeof row.进店转化率 === 'number' &&
-      typeof row.下单转化率 === 'number'
+      row !== null &&
+      typeof row === 'object' &&
+      typeof (row as Record<string, unknown>).日期 === 'string' &&
+      typeof (row as Record<string, unknown>).门店名称 === 'string' &&
+      typeof (row as Record<string, unknown>).门店编号 === 'string' &&
+      typeof (row as Record<string, unknown>).收入 === 'number' &&
+      typeof (row as Record<string, unknown>).进店转化率 === 'number' &&
+      typeof (row as Record<string, unknown>).下单转化率 === 'number'
     );
   }
 
