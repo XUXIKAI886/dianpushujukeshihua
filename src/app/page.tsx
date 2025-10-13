@@ -109,17 +109,18 @@ export default function Home() {
     },
     {
       title: '饿了么数据分析',
-      description: '即将推出的饿了么店铺数据可视化分析系统',
+      description: '专业的饿了么店铺数据可视化分析系统',
       icon: <BarChart3 className="h-8 w-8 text-white" />,
       gradient: 'bg-gradient-to-br from-blue-500 to-indigo-600',
       iconBg: 'bg-white/20',
-      available: false,
+      href: '/eleme',
+      available: true,
       features: [
-        '多维度数据分析',
-        '智能趋势预测',
-        '竞品对比分析',
-        '运营优化建议',
-        '数据导出功能'
+        '6种专业可视化图表',
+        'AI智能分析报告',
+        '实时数据统计',
+        '本地化数据处理',
+        'Excel文件一键解析'
       ]
     }
   ];

@@ -151,7 +151,7 @@ export default function FileUpload({
         <input
           id="file-input"
           type="file"
-          accept=".xlsx,.xls"
+          accept=".xlsx,.xls,.csv"
           onChange={handleFileInput}
           className="hidden"
           disabled={isDisabled}
@@ -168,11 +168,11 @@ export default function FileUpload({
             {uploadStatus === 'idle' && (
               <>
                 <p className="text-sm text-gray-500">
-                  支持 .xlsx 和 .xls 格式，文件大小不超过 10MB
+                  支持 .xlsx、.xls 和 .csv 格式，文件大小不超过 10MB
                 </p>
                 <div className="flex items-center justify-center space-x-2 text-xs text-gray-400">
                   <FileSpreadsheet className="h-4 w-4" />
-                  <span>Excel 文件</span>
+                  <span>Excel / CSV 文件</span>
                 </div>
               </>
             )}
@@ -184,8 +184,29 @@ export default function FileUpload({
             )}
           </div>
         </div>
+
+        {/* 支持的字段说明 */}
+        {uploadStatus === 'idle' && (
+          <div className="mt-6 p-4 bg-blue-50 rounded-lg border border-blue-200">
+            <p className="text-sm font-medium text-blue-900 mb-2">需要包含的字段：</p>
+            <div className="text-xs text-blue-700 space-y-1">
+              <div className="flex items-center space-x-2">
+                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                <span>日期、门店名称、门店id、省份、门店所在城市、区县市</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                <span>营业收入、曝光人数、入店人数、下单人数</span>
+              </div>
+              <div className="flex items-center space-x-2">
+                <span className="w-1.5 h-1.5 bg-blue-500 rounded-full"></span>
+                <span>入店转化率、下单转化率</span>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
-      
+
       {uploadStatus === 'success' && (
         <div className="mt-4 p-4 bg-green-100 border border-green-300 rounded-lg animate-slide-up">
           <div className="flex items-center space-x-2">
