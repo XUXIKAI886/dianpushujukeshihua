@@ -1,0 +1,30 @@
+# 依赖和构建文件
+node_modules
+.next
+out
+
+# 开发文件
+.git
+.github
+*.log
+*.md
+!README.md
+
+# 环境文件
+.env*.local
+
+# IDE 配置
+.vscode
+.idea
+
+# 测试文件
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+
+# 文档
+docs
+*.bat
+h.bat
+push.bat

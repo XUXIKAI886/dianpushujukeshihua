@@ -1,7 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-  // 静态导出配置（用于GitHub Pages）
-  output: 'export',
+  // 部署平台自动检测
+  // Vercel: 使用服务端渲染 (默认)
+  // 其他: 使用静态导出
+  output: process.env.VERCEL ? undefined : 'export',
   trailingSlash: true,
   
   // 启用实验性功能
@@ -20,7 +22,8 @@ const nextConfig = {
   
   // 图片优化
   images: {
-    unoptimized: true,
+    // Vercel 支持图片优化，其他平台使用 unoptimized
+    unoptimized: !process.env.VERCEL,
     formats: ['image/webp', 'image/avif'],
     deviceSizes: [640, 750, 828, 1080, 1200, 1920, 2048, 3840],
     imageSizes: [16, 32, 48, 64, 96, 128, 256, 384],

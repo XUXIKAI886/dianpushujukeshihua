@@ -161,11 +161,19 @@ export default function ElemeAIAnalysisReport({ data, storeInfo }: ElemeAIAnalys
     try {
       const dataForAI = prepareDataForAI();
 
-      const response = await fetch('https://jeniya.top/v1/chat/completions', {
+      // 从环境变量获取 API Key
+      const apiKey = process.env.NEXT_PUBLIC_AI_API_KEY || '';
+      const apiUrl = process.env.NEXT_PUBLIC_AI_API_URL || 'https://jeniya.top/v1/chat/completions';
+
+      if (!apiKey) {
+        throw new Error('API Key 未配置，请在 Vercel 环境变量中设置 NEXT_PUBLIC_AI_API_KEY');
+      }
+
+      const response = await fetch(apiUrl, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': 'Bearer sk-AHP64E0ntf5VEltYLSV17wTLYeV4WZ3ucJzf72u0UHXf0Hos'
+          'Authorization': `Bearer ${apiKey}`
         },
         body: JSON.stringify({
           model: 'gemini-2.5-flash-lite',

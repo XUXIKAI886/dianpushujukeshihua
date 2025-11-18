@@ -214,14 +214,25 @@ Excel文件必须包含以下字段：
 
 ### 🚀 一键部署
 
-#### Vercel（推荐）
+#### Vercel（推荐 - 最佳性能）
 [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https://github.com/XUXIKAI886/dianpushujukeshihua)
+
+**Vercel 部署优势**:
+- ⚡ 全球 CDN 加速
+- 🔒 自动 HTTPS 证书
+- 🚀 零配置部署
+- 📊 性能分析工具
+- 🔄 自动持续部署
+
+**详细指南**: 查看 [VERCEL_DEPLOYMENT.md](./VERCEL_DEPLOYMENT.md)
 
 #### Netlify
 [![Deploy to Netlify](https://www.netlify.com/img/deploy/button.svg)](https://app.netlify.com/start/deploy?repository=https://github.com/XUXIKAI886/dianpushujukeshihua)
 
 ### 📦 GitHub Pages
 项目已配置自动部署，推送到 `master` 分支后自动部署到 GitHub Pages。
+
+**在线演示**: [https://xuxikai886.github.io/dianpushujukeshihua/](https://xuxikai886.github.io/dianpushujukeshihua/)
 
 ### 🔧 手动部署
 详细部署指南请参考：[DEPLOYMENT.md](./DEPLOYMENT.md)
