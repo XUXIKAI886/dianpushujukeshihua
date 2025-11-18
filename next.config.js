@@ -80,10 +80,13 @@ const nextConfig = {
             key: 'X-Content-Type-Options',
             value: 'nosniff',
           },
-          {
-            key: 'X-Frame-Options',
-            value: 'DENY',
-          },
+          // 注释：允许在 iframe/webview 中显示（用于 Tauri 应用）
+          // SAMEORIGIN: 允许同源页面嵌入
+          // 如需完全禁止嵌入，改为 'DENY'
+          // {
+          //   key: 'X-Frame-Options',
+          //   value: 'SAMEORIGIN',
+          // },
           {
             key: 'X-XSS-Protection',
             value: '1; mode=block',
