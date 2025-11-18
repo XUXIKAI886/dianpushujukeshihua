@@ -28,67 +28,57 @@ export function isTauriEnvironment(): boolean {
 
 /**
  * 通用复制到剪贴板函数 - 支持浏览器和Tauri
+ *
+ * 策略说明：
+ * 1. 优先使用 execCommand('copy') - 兼容性最好，在 Tauri webview 中可用
+ * 2. 降级使用 navigator.clipboard.writeText - 现代浏览器首选
+ * 3. Tauri 环境下不使用 clipboard-manager 插件（远程 URL 会被拒绝）
+ *
  * @param {string} text - 要复制的文本内容
  * @returns {Promise<boolean>} 复制是否成功
  */
 export async function copyToClipboard(text: string): Promise<boolean> {
   const isTauri = isTauriEnvironment();
 
-  // 浏览器环境
+  // 方法1: 使用 execCommand (兼容性最好，Tauri webview 支持)
+  try {
+    const textarea = document.createElement('textarea');
+    textarea.value = text;
+    textarea.style.position = 'fixed';
+    textarea.style.left = '-9999px';
+    textarea.style.top = '-9999px';
+    textarea.setAttribute('readonly', '');
+    document.body.appendChild(textarea);
+
+    // 选中文本
+    textarea.select();
+    textarea.setSelectionRange(0, text.length);
+
+    // 执行复制
+    const success = document.execCommand('copy');
+    document.body.removeChild(textarea);
+
+    if (success) {
+      console.log(`✅ [${isTauri ? 'Tauri-execCommand' : '浏览器-execCommand'}] 复制成功`);
+      return true;
+    }
+  } catch (error) {
+    console.error('❌ [execCommand] 复制失败:', error);
+  }
+
+  // 方法2: 降级使用 Clipboard API (仅在非 Tauri 或 HTTPS 环境下可用)
   if (!isTauri) {
     try {
       await navigator.clipboard.writeText(text);
-      console.log('✅ [浏览器] 复制成功');
+      console.log('✅ [浏览器-Clipboard API] 复制成功');
       return true;
     } catch (error) {
-      console.error('❌ [浏览器] 复制失败:', error);
-      // 降级方案：使用 execCommand
-      try {
-        const textarea = document.createElement('textarea');
-        textarea.value = text;
-        textarea.style.position = 'fixed';
-        textarea.style.opacity = '0';
-        document.body.appendChild(textarea);
-        textarea.select();
-        const success = document.execCommand('copy');
-        document.body.removeChild(textarea);
-        if (success) {
-          console.log('✅ [浏览器-降级] 复制成功');
-          return true;
-        }
-      } catch (fallbackError) {
-        console.error('❌ [浏览器-降级] 复制失败:', fallbackError);
-      }
-      return false;
+      console.error('❌ [浏览器-Clipboard API] 复制失败:', error);
     }
   }
 
-  // Tauri 环境
-  try {
-    console.log('📋 [Tauri] 开始复制到剪贴板');
-
-    await (window as unknown as TauriWindow).__TAURI__.core.invoke('plugin:clipboard-manager|write_text', {
-      data: {
-        text: text
-      }
-    });
-
-    console.log('✅ [Tauri] 复制成功');
-    return true;
-  } catch (error) {
-    console.error('❌ [Tauri] 复制失败:', error);
-    console.error('错误详情:', error instanceof Error ? error.message : String(error));
-
-    // 降级方案：尝试使用浏览器 API
-    try {
-      await navigator.clipboard.writeText(text);
-      console.log('✅ [Tauri-降级] 使用浏览器 API 复制成功');
-      return true;
-    } catch (fallbackError) {
-      console.error('❌ [Tauri-降级] 复制失败:', fallbackError);
-      return false;
-    }
-  }
+  console.error('❌ 所有复制方法都失败');
+  return false;
 }
 
 /**
