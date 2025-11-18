@@ -34,6 +34,7 @@
 - **🎯 数据洞察**: 深度挖掘运营数据价值
 - **💼 商业级体验**: 专业的数据展示和用户体验
 - **🔒 数据安全**: 本地处理，数据不上传服务器
+- **🖥️ Tauri桌面应用支持**: 完美兼容桌面应用环境
 
 ## 🛠️ 技术栈
 
@@ -210,6 +211,86 @@ Excel文件必须包含以下字段：
 - **积极语调**: 鼓励性的分析语言
 - **平台适配**: 符合各平台运营特点
 
+## 🖥️ Tauri 桌面应用集成
+
+本项目完美支持在 Tauri 桌面应用中使用，提供与浏览器一致的功能体验。
+
+### ✨ 支持的功能
+- ✅ **剪贴板复制**: AI 分析报告一键复制（自动兼容桌面环境）
+- ✅ **数据上传**: 完整的文件上传和解析功能
+- ✅ **图表渲染**: 所有可视化图表正常显示
+- ✅ **AI 分析**: 智能分析报告生成和展示
+- ⏳ **文件下载**: 图片和表格下载（工具函数已预留）
+
+### 🔧 集成方法
+
+#### 方式一：使用 Vercel 部署的在线版本
+```rust
+// src-tauri/src/main.rs
+use tauri::Manager;
+
+fn main() {
+    tauri::Builder::default()
+        .setup(|app| {
+            let window = app.get_window("main").unwrap();
+            window.eval("window.location.replace('https://www.xuxikai.shop/')")?;
+            Ok(())
+        })
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+}
+```
+
+#### 方式二：本地构建静态文件
+```bash
+# 1. 构建 Next.js 静态文件
+npm run build
+
+# 2. 复制 out/ 目录到 Tauri 项目
+cp -r out/* /path/to/tauri/project/dist/
+
+# 3. 配置 Tauri 使用本地文件
+# tauri.conf.json
+{
+  "build": {
+    "distDir": "../dist"
+  }
+}
+```
+
+### 📋 环境要求
+- **Tauri 版本**: 2.x+
+- **必需插件**: 无（自动兼容）
+- **权限配置**: 无需特殊配置
+
+### 🛠️ 技术实现
+
+项目使用智能环境检测，自动适配不同运行环境：
+
+```typescript
+// 自动检测 Tauri 环境
+export function isTauriEnvironment(): boolean {
+  return typeof window.__TAURI__ !== 'undefined';
+}
+
+// 跨平台复制功能
+export async function copyToClipboard(text: string): Promise<boolean> {
+  // 优先使用 execCommand (兼容 Tauri webview)
+  // 降级使用 Clipboard API (现代浏览器)
+}
+```
+
+### 📚 集成文档
+- 📖 [快速开始指南](./TAURI_DOWNLOAD_QUICK_START.md) - 5分钟快速集成
+- 📖 [完整集成文档](./TAURI_DOWNLOAD_INTEGRATION_GUIDE.md) - 详细技术说明
+
+### ⚠️ 注意事项
+1. **远程 URL 限制**: Tauri 的安全策略限制部分功能，本项目已做兼容处理
+2. **API Key 配置**: 使用环境变量配置，确保桌面应用安全
+3. **跨域问题**: Vercel 部署的版本已配置 CORS 头部
+
+---
+
 ## 🌐 部署方式
 
 ### 🚀 一键部署
@@ -267,16 +348,22 @@ Excel文件必须包含以下字段：
 │   ├── 📁 utils/               # 工具函数
 │   │   ├── 📄 excelParser.ts   # Excel/CSV文件解析
 │   │   ├── 📄 elemeExcelParser.ts # 饿了么Excel文件解析
-│   │   └── 📄 dataProcessor.ts # 数据处理逻辑
+│   │   ├── 📄 dataProcessor.ts # 数据处理逻辑
+│   │   └── 📄 tauriUtils.ts    # Tauri桌面应用兼容工具
 │   └── 📁 lib/                 # 核心库文件
 │       ├── 📄 dataService.ts   # 美团数据服务层
 │       └── 📄 elemeDataService.ts # 饿了么数据服务层
 ├── 📁 out/                     # 静态导出文件
 ├── 📁 public/                  # 静态资源
 ├── 📄 next.config.js           # Next.js 配置
+├── 📄 vercel.json              # Vercel 部署配置
 ├── 📄 tailwind.config.ts       # Tailwind 配置
 ├── 📄 tsconfig.json            # TypeScript 配置
 ├── 📄 package.json             # 项目依赖
+├── 📄 .env.example             # 环境变量示例
+├── 📄 CLAUDE.md                # Claude Code 项目指南
+├── 📄 TAURI_DOWNLOAD_QUICK_START.md      # Tauri 集成快速开始
+├── 📄 TAURI_DOWNLOAD_INTEGRATION_GUIDE.md # Tauri 集成完整指南
 ├── 📄 sample-data.json         # 示例数据
 └── 📄 README.md                # 项目文档
 ```
@@ -327,9 +414,11 @@ npm run format
 - ✅ 数据上传和验证
 - ✅ 6种可视化图表
 - ✅ AI智能分析报告
+- ✅ 一键复制报告功能
+- ✅ Tauri桌面应用支持
 - ✅ 响应式设计
 - ✅ 错误处理机制
-- ✅ 静态导出部署
+- ✅ 多平台部署支持
 - ✅ 代码质量保障
 
 ## 🤝 贡献指南
@@ -354,29 +443,51 @@ npm run format
 
 ## 📝 更新日志
 
-### 🆕 最新版本 (2025-10-13)
+### 🆕 最新版本 v1.4.0 (2025-01-18)
 
 #### ✨ 新功能
-- 🏪 **新增饿了么平台支持**: 完整实现饿了么数据分析功能
-- 📄 **CSV文件支持**: 支持美团CSV格式数据上传
-- 🌐 **GBK编码支持**: 使用 iconv-lite 完美处理中文编码
-- 🤖 **平台定制AI分析**: 为饿了么提供专属分析报告
-- 📊 **字段说明优化**: 上传界面显示必需字段信息
-- 📅 **自动日期排序**: CSV数据上传后自动按日期排序
+- 🖥️ **Tauri 桌面应用支持**: 完美兼容 Tauri 桌面环境
+- 📋 **剪贴板功能**: AI 分析报告支持一键复制
+- 🔄 **跨平台兼容**: 自动适配浏览器和桌面应用环境
+- 🛡️ **安全性增强**: API Key 移至环境变量管理
+- 🌐 **Vercel 部署优化**: 自动环境检测和最佳实践配置
 
 #### 🔧 技术改进
-- ⚡ **TypeScript严格模式**: 修复 ESLint no-explicit-any 错误
-- 📦 **新增依赖**: iconv-lite 0.7.0 用于 GBK 编码转换
-- 🎯 **类型安全**: 使用 unknown 类型和类型守卫替代 any
-- 🏗️ **代码组织**: 完善饿了么相关组件和服务层
+- 📄 **Tauri 工具集**: 新增 `tauriUtils.ts` 提供跨平台工具函数
+  - `isTauriEnvironment()`: 环境自动检测
+  - `copyToClipboard()`: 兼容浏览器和 Tauri 的复制功能
+  - `downloadImage()`: 图片下载功能（预留）
+  - `downloadTable()`: 表格下载功能（预留）
+- 🔐 **环境变量管理**:
+  - 创建 `.env.example` 模板文件
+  - API Key 安全存储在 `.env.local`
+  - 部署时使用平台环境变量
+- ⚙️ **Next.js 配置优化**:
+  - 自动检测 Vercel 环境
+  - 静态导出 / SSR 智能切换
+  - 移除 X-Frame-Options 以支持 Tauri webview
+- 📚 **文档完善**:
+  - 新增 `CLAUDE.md` 项目指南
+  - 新增 `TAURI_DOWNLOAD_QUICK_START.md` 快速开始
+  - 新增 `TAURI_DOWNLOAD_INTEGRATION_GUIDE.md` 完整指南
+  - 新增 `VERCEL_DEPLOYMENT.md` 部署文档
 
 #### 🐛 问题修复
-- ✅ 修复 CSV 文件 GBK 编码乱码问题
-- ✅ 修复 GitHub Actions TypeScript 构建错误
-- ✅ 完善数据验证和错误处理
-- ✅ 优化文件解析性能
+- ✅ **修复 Tauri 剪贴板权限问题**:
+  - 解决远程 URL 无法使用 clipboard-manager 插件
+  - 使用 `execCommand('copy')` 替代 Clipboard API
+  - 完美支持桌面应用环境
+- ✅ **修复 X-Frame-Options 阻止**: 移除限制以支持 iframe/webview 加载
+- ✅ **修复 API Key 安全问题**: 移除硬编码，使用环境变量
+
+#### 🎯 兼容性改进
+- ✅ 浏览器环境：完全支持
+- ✅ Tauri 桌面应用：完全支持
+- ✅ Vercel 部署：自动优化
+- ✅ GitHub Pages 部署：静态导出
 
 ### 🔄 历史版本
+- **v1.4.0** (2025-01-18): Tauri 桌面应用支持和安全增强
 - **v1.3.0** (2025-10-13): 新增饿了么平台和CSV支持
 - **v1.2.0** (2025-09-10): 优化构建配置和响应式设计
 - **v1.1.0** (2025-09-08): 新增AI智能分析功能
