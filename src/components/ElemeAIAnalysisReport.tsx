@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { Brain, Copy, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
 import { ElemeProcessedData, ElemeStoreInfo } from '@/types/eleme';
+import { copyToClipboard } from '@/utils/tauriUtils';
 
 interface ElemeAIAnalysisReportProps {
   data: ElemeProcessedData[];
@@ -248,14 +249,19 @@ export default function ElemeAIAnalysisReport({ data, storeInfo }: ElemeAIAnalys
     }
   };
 
-  // 复制报告内容
+  // 复制报告内容 - 支持浏览器和 Tauri 环境
   const copyReport = async () => {
     try {
-      await navigator.clipboard.writeText(analysis.report);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      const success = await copyToClipboard(analysis.report);
+      if (success) {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      } else {
+        alert('复制失败，请重试');
+      }
     } catch (error) {
       console.error('复制失败:', error);
+      alert('复制失败: ' + (error instanceof Error ? error.message : '未知错误'));
     }
   };
 
