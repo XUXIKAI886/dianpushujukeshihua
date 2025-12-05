@@ -1,8 +1,8 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Copy, Download, Check, Loader2, ImageIcon } from 'lucide-react';
-import { downloadImage, copyImageToClipboard, isTauriEnvironment } from '@/utils/tauriUtils';
+import { Download, Check, Loader2, ImageIcon } from 'lucide-react';
+import { downloadImage } from '@/utils/tauriUtils';
 
 interface ImagePreviewProps {
   imageUrl: string | null;
@@ -15,36 +15,8 @@ export default function ImagePreview({
   storeName,
   isLoading = false,
 }: ImagePreviewProps) {
-  const [copySuccess, setCopySuccess] = useState(false);
   const [downloadSuccess, setDownloadSuccess] = useState(false);
-  const [copying, setCopying] = useState(false);
   const [downloading, setDownloading] = useState(false);
-
-  // 复制图片到剪贴板
-  const handleCopyImage = async () => {
-    if (!imageUrl || copying) return;
-
-    setCopying(true);
-    try {
-      const success = await copyImageToClipboard(imageUrl);
-      if (success) {
-        setCopySuccess(true);
-        setTimeout(() => setCopySuccess(false), 2000);
-      } else {
-        // 在 Tauri 环境中，如果复制失败，提示用户使用下载功能
-        if (isTauriEnvironment()) {
-          alert('桌面应用暂不支持直接复制图片，请使用「下载图片」功能保存后再复制');
-        } else {
-          alert('复制失败，请尝试下载图片后手动复制');
-        }
-      }
-    } catch (error) {
-      console.error('复制图片失败:', error);
-      alert('复制失败，请尝试下载图片后手动复制');
-    } finally {
-      setCopying(false);
-    }
-  };
 
   // 下载图片
   const handleDownload = async () => {
@@ -124,30 +96,6 @@ export default function ImagePreview({
 
       {/* 操作按钮 */}
       <div className="px-6 py-4 bg-white border-t border-gray-100 flex flex-wrap gap-3 justify-center sm:justify-end">
-        <button
-          onClick={handleCopyImage}
-          disabled={copying}
-          className={`
-            flex items-center space-x-2 px-5 py-2.5 rounded-lg font-medium
-            transition-all duration-200
-            ${
-              copySuccess
-                ? 'bg-green-500 text-white'
-                : 'bg-purple-600 hover:bg-purple-700 text-white'
-            }
-            disabled:opacity-50 disabled:cursor-not-allowed
-          `}
-        >
-          {copying ? (
-            <Loader2 className="w-4 h-4 animate-spin" />
-          ) : copySuccess ? (
-            <Check className="w-4 h-4" />
-          ) : (
-            <Copy className="w-4 h-4" />
-          )}
-          <span>{copySuccess ? '已复制' : '复制图片'}</span>
-        </button>
-
         <button
           onClick={handleDownload}
           disabled={downloading}
