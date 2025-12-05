@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { BarChart3, ArrowRight, Zap, Shield, Brain } from 'lucide-react';
+import { BarChart3, ArrowRight, Zap, Shield, Brain, Sparkles } from 'lucide-react';
 import Link from 'next/link';
 
 interface PlatformCardProps {
@@ -122,6 +122,22 @@ export default function Home() {
         '本地化数据处理',
         'Excel文件一键解析'
       ]
+    },
+    {
+      title: '截图生成数据分析图',
+      description: '上传店铺数据截图，AI生成专业分析图片',
+      icon: <Sparkles className="h-8 w-8 text-white" />,
+      gradient: 'bg-gradient-to-br from-purple-500 to-pink-500',
+      iconBg: 'bg-white/20',
+      href: '/screenshot-analysis',
+      available: true,
+      features: [
+        'AI智能识别数据',
+        '生成专业分析图',
+        '一键复制/下载图片',
+        '配套挽留话术',
+        '提升专业形象'
+      ]
     }
   ];
 
@@ -198,7 +214,7 @@ export default function Home() {
         </div>
 
         {/* 平台选择卡片 */}
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
           {platforms.map((platform, index) => (
             <PlatformCard
               key={index}
