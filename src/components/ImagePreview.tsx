@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 import { Copy, Download, Check, Loader2, ImageIcon } from 'lucide-react';
-import { downloadImage } from '@/utils/tauriUtils';
+import { downloadImage, copyImageToClipboard, isTauriEnvironment } from '@/utils/tauriUtils';
 
 interface ImagePreviewProps {
   imageUrl: string | null;
@@ -26,27 +26,16 @@ export default function ImagePreview({
 
     setCopying(true);
     try {
-      // 将 base64 图片转换为 Blob
-      const response = await fetch(imageUrl);
-      const blob = await response.blob();
-
-      // 确保是 PNG 格式以获得最佳兼容性
-      const pngBlob = blob.type === 'image/png' ? blob : await convertToPng(blob);
-
-      // 使用 Clipboard API 复制图片
-      if (navigator.clipboard && 'write' in navigator.clipboard) {
-        const item = new ClipboardItem({ 'image/png': pngBlob });
-        await navigator.clipboard.write([item]);
+      const success = await copyImageToClipboard(imageUrl);
+      if (success) {
         setCopySuccess(true);
         setTimeout(() => setCopySuccess(false), 2000);
       } else {
-        // 降级方案：创建临时 canvas 复制
-        const success = await copyImageViaCanvas(imageUrl);
-        if (success) {
-          setCopySuccess(true);
-          setTimeout(() => setCopySuccess(false), 2000);
+        // 在 Tauri 环境中，如果复制失败，提示用户使用下载功能
+        if (isTauriEnvironment()) {
+          alert('桌面应用暂不支持直接复制图片，请使用「下载图片」功能保存后再复制');
         } else {
-          alert('您的浏览器不支持复制图片，请使用下载功能');
+          alert('复制失败，请尝试下载图片后手动复制');
         }
       }
     } catch (error) {
@@ -55,68 +44,6 @@ export default function ImagePreview({
     } finally {
       setCopying(false);
     }
-  };
-
-  // 将图片转换为 PNG Blob
-  const convertToPng = async (blob: Blob): Promise<Blob> => {
-    return new Promise((resolve, reject) => {
-      const img = new Image();
-      img.onload = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          reject(new Error('无法获取 canvas context'));
-          return;
-        }
-        ctx.drawImage(img, 0, 0);
-        canvas.toBlob((pngBlob) => {
-          if (pngBlob) {
-            resolve(pngBlob);
-          } else {
-            reject(new Error('转换 PNG 失败'));
-          }
-        }, 'image/png');
-      };
-      img.onerror = reject;
-      img.src = URL.createObjectURL(blob);
-    });
-  };
-
-  // 通过 canvas 复制图片（降级方案）
-  const copyImageViaCanvas = async (dataUrl: string): Promise<boolean> => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.onload = async () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = img.width;
-        canvas.height = img.height;
-        const ctx = canvas.getContext('2d');
-        if (!ctx) {
-          resolve(false);
-          return;
-        }
-        ctx.drawImage(img, 0, 0);
-
-        try {
-          const blob = await new Promise<Blob | null>((res) =>
-            canvas.toBlob(res, 'image/png')
-          );
-          if (blob && navigator.clipboard && 'write' in navigator.clipboard) {
-            const item = new ClipboardItem({ 'image/png': blob });
-            await navigator.clipboard.write([item]);
-            resolve(true);
-          } else {
-            resolve(false);
-          }
-        } catch {
-          resolve(false);
-        }
-      };
-      img.onerror = () => resolve(false);
-      img.src = dataUrl;
-    });
   };
 
   // 下载图片
