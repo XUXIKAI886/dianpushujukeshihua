@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Copy, Check, MessageSquareText, Sparkles, TrendingUp, Target, Lightbulb } from 'lucide-react';
 import { ANALYSIS_COPY_TEXT } from '@/types/screenshot';
-import { copyToClipboard } from '@/utils/tauriUtils';
+import { copyToClipboard } from '@/lib/tauriClipboard';
 
 export default function AnalysisCopyText() {
   const [copied, setCopied] = useState(false);

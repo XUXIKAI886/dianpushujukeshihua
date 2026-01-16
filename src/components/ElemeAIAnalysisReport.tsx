@@ -3,7 +3,7 @@
 import React, { useState } from 'react';
 import { Brain, Copy, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
 import { ElemeProcessedData, ElemeStoreInfo } from '@/types/eleme';
-import { copyToClipboard } from '@/utils/tauriUtils';
+import { copyToClipboard } from '@/lib/tauriClipboard';
 
 interface ElemeAIAnalysisReportProps {
   data: ElemeProcessedData[];

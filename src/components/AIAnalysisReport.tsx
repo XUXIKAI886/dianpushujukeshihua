@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { Brain, Copy, RefreshCw, CheckCircle2, AlertCircle } from 'lucide-react';
 import { ProcessedData, StoreInfo } from '@/types';
 import { formatCurrency, formatNumber, formatPercentage } from '@/utils/dataProcessor';
-import { copyToClipboard } from '@/utils/tauriUtils';
+import { copyToClipboard } from '@/lib/tauriClipboard';
 
 interface AIAnalysisReportProps {
   data: ProcessedData[];
