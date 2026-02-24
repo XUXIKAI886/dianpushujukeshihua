@@ -162,19 +162,10 @@ export default function ElemeAIAnalysisReport({ data, storeInfo }: ElemeAIAnalys
     try {
       const dataForAI = prepareDataForAI();
 
-      // 从环境变量获取 API Key
-      const apiKey = process.env.NEXT_PUBLIC_AI_API_KEY || '';
-      const apiUrl = process.env.NEXT_PUBLIC_AI_API_URL || 'https://jeniya.top/v1/chat/completions';
-
-      if (!apiKey) {
-        throw new Error('API Key 未配置，请在 Vercel 环境变量中设置 NEXT_PUBLIC_AI_API_KEY');
-      }
-
-      const response = await fetch(apiUrl, {
+      const response = await fetch('/api/ai/chat', {
         method: 'POST',
         headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${apiKey}`
+          'Content-Type': 'application/json'
         },
         body: JSON.stringify({
           model: 'gemini-2.5-flash-lite',
@@ -227,11 +218,11 @@ export default function ElemeAIAnalysisReport({ data, storeInfo }: ElemeAIAnalys
         })
       });
 
-      if (!response.ok) {
-        throw new Error(`API请求失败: ${response.status} ${response.statusText}`);
-      }
-
       const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result?.error || `API请求失败: ${response.status} ${response.statusText}`);
+      }
 
       if (result.choices && result.choices[0] && result.choices[0].message) {
         const report = result.choices[0].message.content.trim();
