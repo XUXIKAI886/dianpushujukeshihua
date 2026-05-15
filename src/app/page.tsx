@@ -26,7 +26,7 @@ function PlatformCard({ title, description, icon, gradient, iconBg, href, availa
           </span>
         ) : (
           <span className="px-2 py-1 text-xs font-medium bg-white/20 text-white rounded-full">
-            即将上线
+            暂时停用
           </span>
         )}
       </div>
@@ -130,7 +130,7 @@ export default function Home() {
       gradient: 'bg-gradient-to-br from-purple-500 to-pink-500',
       iconBg: 'bg-white/20',
       href: '/screenshot-analysis',
-      available: true,
+      available: false,
       features: [
         'AI智能识别数据',
         '生成专业分析图',
